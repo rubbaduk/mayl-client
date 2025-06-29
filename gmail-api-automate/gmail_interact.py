@@ -204,7 +204,7 @@ def send_email(service, to, subject, body, body_type = 'plain', attachment_paths
 
                 part.add_header(
                     "Content-Disposition",
-                    f"attachment, filename = {filename}",
+                    f"attachment; filename=\"{filename}\"",
                 )
 
                 message.attach(part)
@@ -220,3 +220,41 @@ def send_email(service, to, subject, body, body_type = 'plain', attachment_paths
     ).execute()
 
     return sent_message
+
+
+def download_attachments_main(service, user_id, msg_id, target_dir):
+    
+    os.makedirs(target_dir, exist_ok=True)
+
+    message = service.users().messages().get(userId=user_id, id=msg_id).execute()
+    for part in message['payload']['parts']:
+        if part['filename']:
+            att_id = part['body']['attachmentId']
+            att = service.users().messages().attachments().get(userId=user_id, messageId=msg_id, id=att_id).execute()
+            data = att['data']
+            file_data = base64.urlsafe_b64decode(data.encode('UTF-8'))
+            file_path = os.path.join(target_dir, part['filename'])
+            print('Attachment is saving to: ', file_path)
+            with open(file_path, 'wb') as f:
+                f.write(file_data)
+
+# Get attachments of entire thread
+def download_attachments_all(service, user_id, msg_id, target_dir):
+    # Create target directory if it doesn't exist
+    os.makedirs(target_dir, exist_ok=True)
+    
+    thread = service.users().threads().get(userId=user_id, id=msg_id).execute()
+    for message in thread['messages']:
+        for part in message['payload']['parts']:
+            if part['filename']:
+                att_id = part['body']['attachmentId']
+                att = service.users().messages().attachments().get(userId=user_id, messageId=msg_id, id=att_id).execute()
+                data = att['data']
+                file_data = base64.urlsafe_b64decode(data.encode('UTF-8'))
+                file_path = os.path.join(target_dir, part['filename'])
+                print('Attachment is saving to: ', file_path)
+                with open(file_path, 'wb') as f:
+                    f.write(file_data)
+    
+
+    

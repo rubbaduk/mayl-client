@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from gmail_interact import get_email_messages, get_email_message_details, init_gmail_service
 from gmail_interact import send_email
+from gmail_interact import download_attachments_all, download_attachments_main
 
 client_file = 'client_secret.json'
 service = init_gmail_service(client_file)
@@ -34,7 +35,7 @@ for msg in messages:
 
 # TEST SENDING EMAILS
 
-to_address = 'TEST3124112353@gmail.com'
+to_address = 'cheesyspotato@gmail.com'
 email_subject = 'Gmail API Sending Email Test'
 email_body = 'This is a test using Gmails API'
 
@@ -51,3 +52,12 @@ sent_email = send_email(
 )
 
 print(sent_email)
+
+# TEST DOWNLOADING ATTACHMENTS
+
+user_id = 'me'
+msg_id = '197bab7f175c7da1'
+thread_id = '197bab7f175c7da1'
+download_dir = Path('./downloads')
+
+download_attachments_main(service, user_id, msg_id, download_dir)
