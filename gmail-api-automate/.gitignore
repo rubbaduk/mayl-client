@@ -1,0 +1,25 @@
+# Sensitive files - DO NOT COMMIT
+client_secret.json
+token files/
+*.json
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment files
+bin/
+lib/
+include/
+pyvenv.cfg
+
+# macOS files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
