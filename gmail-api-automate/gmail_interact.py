@@ -257,4 +257,65 @@ def download_attachments_all(service, user_id, msg_id, target_dir):
                     f.write(file_data)
     
 
+
+# Search Functions - returns message objects that match queries
+'''
+https://developers.google.com/workspace/gmail/api/guides/filtering
+https://support.google.com/mail/answer/7190
+
+'''
+
+def search_emails(service, query, user_id='me', max_results=5):
+    """
+    example queries:
+        - "from:example@gmail.com" - emails from specific sender
+        - "subject:meeting" - emails with "meeting" in subject
+        - "has:attachment" - emails with attachments
+        - "is:unread" - unread emails
+        - "label:inbox" - emails in inbox
+        - "after:2024/01/01" - emails after specific date
+        - "before:2024/12/31" - emails before specific date
+    """
+
+    messages = []
+    next_page_token = None
     
+    while True:
+        result = service.users().messages().list(
+            userId=user_id,
+            q=query,
+            maxResults=min(500, max_results - len(messages)) if max_results else 500,
+            pageToken=next_page_token
+        ).execute()
+        
+        messages.extend(result.get('messages', []))
+        
+        next_page_token = result.get('nextPageToken')
+        
+        if not next_page_token or (max_results and len(messages) >= max_results):
+            break
+    
+    return messages[:max_results] if max_results else messages
+
+
+def search_email_conversation(service, query, user_id='me', max_results=5):
+    conversations = []
+    next_page_token = None
+
+    while True:
+        result = service.users().threads().list(
+            userId=user_id,
+            q=query,
+            maxResults=min(500, max_results - len(conversations)) if max_results else 500,
+            pageToken=next_page_token
+        ).execute()
+        
+        conversations.extend(result.get('threads', []))
+        
+        next_page_token = result.get('nextPageToken')
+        
+        if not next_page_token or (max_results and len(conversations) >= max_results):
+            break
+    
+    return conversations[:max_results] if max_results else conversations
+
