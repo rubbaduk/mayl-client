@@ -2,6 +2,7 @@
 client_secret.json
 token files/
 *.json
+test.py
 
 # Python cache files
 __pycache__/
