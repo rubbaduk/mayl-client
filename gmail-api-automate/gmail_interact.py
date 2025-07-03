@@ -319,3 +319,40 @@ def search_email_conversation(service, query, user_id='me', max_results=5):
     
     return conversations[:max_results] if max_results else conversations
 
+
+# Label Handling
+
+def create_label(service, name, label_list_visibility = 'labelShow', message_list_visibility = 'show'):
+    label = {
+        'name':name,
+        # controls visibility of gmail label
+        'labelListVisibility':label_list_visibility,
+        # checks to see if the label is showing in email message
+        'messageListVisibility': message_list_visibility
+    }
+    created_label = service.users().labels().create(userId='me', body=label).execute()
+    return created_label
+
+def list_labels(service):
+    results = service.users().labels().list(userId = 'me').execute()
+    labels = results.get('labels', [])
+    return labels
+
+def get_label_details(service, label_id):
+    return service.users().labels().get(userId='me', id=label_id).execute()
+
+def modify_label(service, label_id, **updates):
+    label = service.users().labels().get(userId='me', id=label_id).execute()
+    for key, value in updates.items():
+        label[key] = value
+    
+    updated_label = service.users().labels().update(userId='me', id=label_id, body=label).execute()
+    return updated_label
+
+def delete_label(service, label_id):
+    service.users().labels().delete(userId='me', id=label_id).execute()
+
+def map_label_name_to_id(service, label_name):
+    labels = list_labels(service)
+    label = next((label for label in labels if label['name'] == label_name), None)
+    return label['id'] if label else None
