@@ -356,3 +356,28 @@ def map_label_name_to_id(service, label_name):
     labels = list_labels(service)
     label = next((label for label in labels if label['name'] == label_name), None)
     return label['id'] if label else None
+
+# Manages labels from emails:
+
+def modify_email_labels(service, user_id, message_id, add_labels = None, remove_labels = None):
+    
+    # Sorts list of labels into batches
+    def batch_labels(labels, batch_size = 100):
+        return [labels[i:i + batch_size] for i in range(0, len(labels), batch_size)]
+
+    if add_labels:
+        for batch in batch_labels(add_labels):
+            service.users().messages().modify(
+                userId=user_id,
+                id=message_id,
+                body={'addLabelIds': batch}
+            ).execute()
+
+    if remove_labels:
+        for batch in batch_labels(remove_labels):
+            service.users().messages().modify(
+            userId=user_id,
+            id=message_id,
+            body={'removeLabelIds': batch}
+    ).execute()
+
