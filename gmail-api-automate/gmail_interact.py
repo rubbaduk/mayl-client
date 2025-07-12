@@ -574,3 +574,40 @@ def send_draft_email(service, draft_id):
 
 def delete_draft_email(service, draft_id):
     service.users().drafts().delete(userId='me', id=draft_id).execute()
+
+
+def get_message_and_replies(service, message_id):
+    # grab thread id
+    message = service.users().messages().get(
+        userId='me',
+        id=message_id,
+        format='full'            
+    ).execute()
+    thread_id = message['threadId']
+
+    # pull the whole thread
+    thread = service.users().threads().get(
+        userId='me',
+        id=thread_id,
+        format='minimal'        
+    ).execute()
+
+    processed_messages = []
+    for msg in thread.get('messages', []):
+        headers = msg.get('payload', {}).get('headers', [])
+        subject    = next((h['value'] for h in headers if h['name'].lower() == 'subject'),    'No Subject')
+        from_addr  = next((h['value'] for h in headers if h['name'].lower() == 'from'),       'Unknown Sender')
+        date       = next((h['value'] for h in headers if h['name'].lower() == 'date'),       'Unknown Date')
+
+        # assumes you have a helper that walks the payload and returns the decoded text
+        content = _extract_body(msg.get('payload', {}))
+
+        processed_messages.append({
+            'id':      msg.get('id'),
+            'subject': subject,
+            'from':    from_addr,
+            'date':    date,
+            'body':    content
+        })
+
+    return processed_messages
