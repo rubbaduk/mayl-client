@@ -442,3 +442,135 @@ def empty_trash(service):
             break
 
     return total_deleted
+
+
+def list_draft_emails(service, user_id='me', max_results=5):
+    drafts = []
+    next_page_token = None
+
+    while True:
+        result = service.users().drafts().list(
+            userId = user_id,
+            maxResults=min(500, max_results - len(drafts)) if max_results else 500,
+            pageToken = next_page_token
+        ).execute()
+
+        drafts.extend(result.get('drafts', []))
+
+        next_page_token = result.get('nextPageToken')
+
+        if not next_page_token or (max_results and len(drafts) >= max_results):
+            break
+    
+    return drafts[:max_results] if max_results else drafts
+
+
+def create_draft_email(service, to, subject, body, body_type='plain', attachment_paths=None):
+    message = MIMEMultipart()
+    message['to'] = to
+    message['subject'] = subject
+
+    if body_type.lower() not in ['plain', 'html']:
+        raise ValueError("body_type must be either 'plain' or 'html'")
+
+    message.attach(MIMEText(body, body_type.lower()))
+
+    if attachment_paths:
+        for attachment_path in attachment_paths:
+            if os.path.exists(attachment_path):
+                filename = os.path.basename(attachment_path)
+
+                with open(attachment_path, "rb") as attachment:
+                    part = MIMEBase("application", "octet-stream")
+                    part.set_payload(attachment.read())
+
+                encoders.encode_base64(part)
+
+                part.add_header(
+                    "Content-Disposition",
+                    f"attachment; filename= {filename}",
+                )
+
+                message.attach(part)
+            else:
+                raise FileNotFoundError(f"File not found - {attachment_path}")
+
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+    draft = service.users().drafts().create(
+        userId='me',
+        body={'message': {'raw': raw_message}}
+    ).execute()
+
+    return draft
+
+
+
+
+def get_draft_email_message_details(service, draft_id, format='full'):
+
+    draft_detail = service.users().drafts().get(
+        userId='me',
+        id=draft_id,
+        format=format
+    ).execute()
+
+    # pull out the message and its payload
+    draft_message = draft_detail['message']
+    draft_payload = draft_message['payload']
+    headers = draft_payload.get('headers', [])
+
+
+    subject    = next((h['value'] for h in headers if h['name'] == 'Subject'),    'No subject')
+    sender     = next((h['value'] for h in headers if h['name'] == 'From'),       'No sender')
+    recipients = next((h['value'] for h in headers if h['name'] == 'To'),         'No recipients')
+    date       = next((h['value'] for h in headers if h['name'] == 'Date'),       'No date')
+    snippet    = draft_message.get('snippet',                                   'No snippet')
+    labels     = draft_message.get('labelIds', [])
+
+    # flags
+    has_attachments = any(
+        part.get('filename')
+        for part in draft_payload.get('parts', [])
+        if part.get('filename')
+    )
+    star = 'STARRED' in labels
+    label = ', '.join(labels)
+
+    body = '<Text body not available>'
+
+    # look for a plain-text part
+    if 'parts' in draft_payload:
+        for part in draft_payload['parts']:
+            # multipart/alternative may contain text/plain sub-parts
+            if part['mimeType'] == 'multipart/alternative':
+                for subpart in part.get('parts', []):
+                    if subpart['mimeType'] == 'text/plain' and 'data' in subpart.get('body', {}):
+                        data = subpart['body']['data']
+                        body = base64.urlsafe_b64decode(data).decode('utf-8')
+                        break
+            # direct text/plain part
+            elif part['mimeType'] == 'text/plain' and 'data' in part.get('body', {}):
+                data = part['body']['data']
+                body = base64.urlsafe_b64decode(data).decode('utf-8')
+                break
+
+    return {
+        'subject':       subject,
+        'sender':        sender,
+        'recipients':    recipients,
+        'body':          body,
+        'snippet':       snippet,
+        'has_attachments': has_attachments,
+        'date':          date,
+        'star':          star,
+        'label':         label
+    }
+
+
+def send_draft_email(service, draft_id):
+    draft = service.users().drafts().send(userId = 'me', body={'id': draft_id}).execute()
+    return draft
+
+def delete_draft_email(service, draft_id):
+    service.users().drafts().delete(userId='me', id=draft_id).execute()
