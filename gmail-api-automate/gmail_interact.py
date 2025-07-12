@@ -381,3 +381,64 @@ def modify_email_labels(service, user_id, message_id, add_labels = None, remove_
             body={'removeLabelIds': batch}
     ).execute()
 
+
+# Trash/Delete Emails
+
+def trash_email(service, user_id, message_id):
+    service.users().messages().trash(userId=user_id, id=message_id).execute()
+
+
+def batch_trash_emails(service, user_id, message_ids):
+    # combine multiple API calls into a single request
+    batch = service.new_batch_http_request()
+    for message_id in message_ids:
+        batch.add(service.users().messages().trash(userId=user_id, id=message_id))
+    batch.execute()
+
+def perm_delete_email(service, user_id, message_id):
+    service.users().message().delete(userId=user_id, id=message_id).execute()
+
+
+# UNDO TRASH EMAILS
+
+def untrash_email(service, user_id, message_id):
+    service.users().messages().untrash(userId=user_id, id=message_id).execute()
+
+
+def batch_untrash_emails(service, user_id, message_ids):
+    # combine multiple API calls into a single request
+    batch = service.new_batch_http_request()
+    for message_id in message_ids:
+        batch.add(service.users().messages().untrash(userId=user_id, id=message_id))
+    batch.execute()
+
+
+def empty_trash(service):
+    page_token = None
+    total_deleted = 0
+
+    while True:
+        response = service.users().messages().list(
+            userId = 'me',
+            q = 'in:trash',
+            pageToken = page_token,
+            maxResults = 500
+        ).execute()
+
+        messages = response.get('messages', [])
+        if not messages:
+            break
+
+        batch = service.new_batch_http_request()
+        for message in messages:
+            batch.add(service.users().messages().delete(userId='me', id=message['id']))
+        batch.execute()
+
+        total_deleted += len(messages)
+
+        page_token = response.get('nextPageToken')
+
+        if not page_token:
+            break
+
+    return total_deleted
