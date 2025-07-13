@@ -1,0 +1,13 @@
+langchain 
+langchain-community 
+langchain-openai
+langchain-anthropic
+openai
+anthropic
+python-dotenv
+pydantic
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+email-validator
