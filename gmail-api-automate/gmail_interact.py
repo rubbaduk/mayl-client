@@ -6,7 +6,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from google_api import create_service
-import datetime
 
 '''
 - Extracts Email Body
