@@ -1,10 +1,12 @@
 import os
 import base64
+import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from google_api import create_service
+import datetime
 
 '''
 - Extracts Email Body
@@ -68,7 +70,7 @@ payload = {
 
 '''
 
-def get_email_messages(service, user_id='me', label_ids=None, folder_name='INBOX', max_results=5):
+def get_email_messages(service, user_id='me', label_ids=None, folder_name='INBOX', max_results=500):
     messages = []
     # For pagination
     next_page_token = None
@@ -265,7 +267,7 @@ https://support.google.com/mail/answer/7190
 
 '''
 
-def search_emails(service, query, user_id='me', max_results=5):
+def search_emails(service, query, user_id='me', max_results=200):
     """
     example queries:
         - "from:example@gmail.com" - emails from specific sender
@@ -444,7 +446,7 @@ def empty_trash(service):
     return total_deleted
 
 
-def list_draft_emails(service, user_id='me', max_results=5):
+def list_draft_emails(service, user_id='me', max_results=100):
     drafts = []
     next_page_token = None
 
@@ -611,3 +613,96 @@ def get_message_and_replies(service, message_id):
         })
 
     return processed_messages
+
+
+# RETRIEVE EMAIL NUMBERS
+
+def get_current_month_date_range():
+    """Get start and end dates for current month in Gmail search format"""
+    now = datetime.datetime.now()
+    start_of_month = now.replace(day=1)
+    
+    if now.month == 12:
+        next_month = now.replace(year=now.year + 1, month=1, day=1)
+    else:
+        next_month = now.replace(month=now.month + 1, day=1)
+    
+    # Format for Gmail search (YYYY/MM/DD)
+    start_date = start_of_month.strftime('%Y/%m/%d')
+    end_date = next_month.strftime('%Y/%m/%d')
+    
+    return start_date, end_date
+
+def count_emails_by_date_range(service, start_date=None, end_date=None, additional_query=""):
+    
+    date_query = ""
+    if start_date:
+        date_query += f"after:{start_date} "
+    if end_date:
+        date_query += f"before:{end_date} "
+    
+    full_query = f"{date_query}{additional_query}".strip()
+    
+    # use search to get count 
+    try:
+        result = service.users().messages().list(
+            userId='me',
+            q=full_query,
+            maxResults=1  #only need to know if there are results
+        ).execute()
+        
+        if 'messages' not in result:
+            return 0
+        
+        total_count = 0
+        next_page_token = None
+        
+        while True:
+            result = service.users().messages().list(
+                userId='me',
+                q=full_query,
+                maxResults=500,  
+                pageToken=next_page_token
+            ).execute()
+            
+            messages = result.get('messages', [])
+            total_count += len(messages)
+            
+            next_page_token = result.get('nextPageToken')
+            if not next_page_token:
+                break
+        
+        return total_count
+        
+    except Exception as e:
+        print(f"Error counting emails: {e}")
+        return 0
+
+def count_emails_this_month(service):
+    start_date, end_date = get_current_month_date_range()
+    return count_emails_by_date_range(service, start_date, end_date)
+
+def count_emails_this_week(service):
+    now = datetime.datetime.now()
+    start_of_week = now - datetime.timedelta(days=now.weekday())
+    start_date = start_of_week.strftime('%Y/%m/%d')
+    
+    return count_emails_by_date_range(service, start_date, None)
+
+def count_emails_today(service):
+    today = datetime.datetime.now().strftime('%Y/%m/%d')
+    return count_emails_by_date_range(service, today, None)
+
+def get_email_stats_summary(service):
+    
+    stats = {
+        'today': count_emails_today(service),
+        'this_week': count_emails_this_week(service),
+        'this_month': count_emails_this_month(service),
+        'unread': count_emails_by_date_range(service, additional_query="is:unread"),
+        'with_attachments': count_emails_by_date_range(service, additional_query="has:attachment"),
+    }
+    
+    return stats
+
+

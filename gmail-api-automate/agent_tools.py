@@ -15,8 +15,6 @@ def init_gmail_service(gmail_service):
 
 @tool
 def search_emails_tool(query: str, max_results: int = 5) -> str:
-    """Search Gmail for emails matching specific criteria. 
-    Use Gmail search syntax like 'from:sender@email.com', 'subject:meeting', 'is:unread', etc."""
     try:
         if service is None:
             return "Error: gmail service not initialized. Call init_gmail_service() first."
@@ -50,7 +48,6 @@ def search_emails_tool(query: str, max_results: int = 5) -> str:
 
 @tool
 def get_email_details_tool(message_id: str) -> str:
-    """Get detailed information about a specific email by its ID"""
     try:
         if service is None:
             return "Error: Gmail service not initialized. Call init_gmail_service() first."
@@ -72,7 +69,6 @@ def get_email_details_tool(message_id: str) -> str:
 
 @tool
 def list_labels_tool() -> str:
-    """List all available Gmail labels/folders"""
     try:
         if service is None:
             return "Error: Gmail service not initialized. Call init_gmail_service() first."
@@ -84,7 +80,6 @@ def list_labels_tool() -> str:
 
 @tool
 def trash_email_tool(message_id: str) -> str:
-    """Move an email to trash by its message ID. Use with caution!"""
     try:
         if service is None:
             return "Error: Gmail service not initialized. Call init_gmail_service() first."
@@ -93,4 +88,49 @@ def trash_email_tool(message_id: str) -> str:
     except Exception as e:
         return f"Error trashing email: {str(e)}"
 
+@tool
+def count_emails_this_month_tool() -> str:
+    try:
+        if service is None:
+            return "Error: Gmail service not initialized. Call init_gmail_service() first."
+        count = gmail_interact.count_emails_this_month(service)
+        return f"You have received {count} emails this month."
+    except Exception as e:
+        return f"Error counting emails this month: {str(e)}"
 
+@tool
+def count_emails_this_week_tool() -> str:
+    try:
+        if service is None:
+            return "Error: Gmail service not initialized. Call init_gmail_service() first."
+        count = gmail_interact.count_emails_this_week(service)
+        return f"You have received {count} emails this week."
+    except Exception as e:
+        return f"Error counting emails this week: {str(e)}"
+
+@tool
+def count_emails_today_tool() -> str:
+    try:
+        if service is None:
+            return "Error: Gmail service not initialized. Call init_gmail_service() first."
+        count = gmail_interact.count_emails_today(service)
+        return f"You have received {count} emails today."
+    except Exception as e:
+        return f"Error counting emails today: {str(e)}"
+
+@tool
+def get_email_stats_tool() -> str:
+    """Get comprehensive email statistics including counts for today, this week, this month, unread emails, and emails with attachments"""
+    try:
+        if service is None:
+            return "Error: Gmail service not initialized. Call init_gmail_service() first."
+        stats = gmail_interact.get_email_stats_summary(service)
+        return f"""Email Statistics:
+            - Today: {stats['today']} emails
+            - This week: {stats['this_week']} emails  
+            - This month: {stats['this_month']} emails
+            - Unread: {stats['unread']} emails
+            - With attachments: {stats['with_attachments']} emails
+            - Total emails: {stats['total']} emails"""
+    except Exception as e:
+        return f"Error getting email stats: {str(e)}"

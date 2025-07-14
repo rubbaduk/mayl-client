@@ -153,3 +153,8 @@ agent.py
 scratch.py
 debug.py
 temp_*.py
+
+# Test files and folders
+tests/
+test_*.py
+*_test.py
