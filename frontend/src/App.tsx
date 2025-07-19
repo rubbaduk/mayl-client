@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
+import { jwtDecode } from 'jwt-decode'
 import './App.css'
+
 declare global {
   interface Window {
     google: any;
@@ -7,8 +9,12 @@ declare global {
 }
 function App() {
 
+  
+
   function handleCallbackResponse(response: any){
     console.log("Encoded JWT ID token: " + response.credential);
+    const decoded = jwtDecode(response.credential);
+    console.log("Decoded JWT:", decoded);
   }
   useEffect(() => {
     if (window.google) {

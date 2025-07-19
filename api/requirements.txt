@@ -1,0 +1,20 @@
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.16
+python-dotenv==1.1.1
+pydantic==2.11.7
+pydantic-settings==2.10.1
+httpx==0.28.1
+PyJWT==2.10.1
+google-auth==2.40.3
+google-auth-oauthlib==1.2.2
+google-auth-httplib2==0.2.0
+google-api-python-client==2.176.0
+cryptography==44.0.0
+
+# AI/ML dependencies - using current working versions
+langchain==0.3.26
+langchain-openai==0.3.27
+langchain-core==0.3.68
+openai==1.95.1
+langsmith==0.4.5
