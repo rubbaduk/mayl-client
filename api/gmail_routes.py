@@ -8,9 +8,9 @@ gmail_backend_path = '/Users/davindo/Desktop/Projects/gmail-api-automate/gmail-a
 if gmail_backend_path not in sys.path:
     sys.path.append(gmail_backend_path)
 
-from auth import AuthService
-from models import EmailSearchRequest, EmailSearchResponse, ChatRequest, ChatResponse
-from agent import GmailAgent
+from .auth import AuthService
+from .models import EmailSearchRequest, EmailSearchResponse, ChatRequest, ChatResponse
+from .agent import GmailAgent
 
 # Import Gmail functions
 try:

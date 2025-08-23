@@ -11,7 +11,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
-from models import UserInfo, UserSession
+from .models import UserInfo, UserSession
 
 class AuthService:
     def __init__(self):

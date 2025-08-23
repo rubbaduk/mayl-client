@@ -5,9 +5,9 @@ import uvicorn
 import os
 from dotenv import load_dotenv
 
-from auth import AuthService
-from gmail_routes import gmail_router
-from models import UserSession
+from .auth import AuthService
+from .gmail_routes import gmail_router
+from .models import UserSession
 
 load_dotenv()
 
