@@ -40,6 +40,7 @@ settings.ini
 *.sqlite
 *.sqlite3
 
+# api/python files
 
 # Python cache and bytecode
 __pycache__/
@@ -83,9 +84,7 @@ htmlcov/
 # Jupyter notebooks
 .ipynb_checkpoints
 
-# ================================================================
-# NODE.JS / FRONTEND SPECIFIC
-# ================================================================
+# frontend
 
 # Dependencies
 node_modules/
@@ -127,9 +126,7 @@ Thumbs.db
 logs/
 *.log
 
-# ================================================================
-# PROJECT SPECIFIC
-# ================================================================
+# backend 
 
 # Gmail API specific files
 gmail_service.pickle
