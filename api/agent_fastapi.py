@@ -7,6 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import tool
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.messages import HumanMessage, SystemMessage
+from .gmail_service import GmailService
 
 load_dotenv()
 
@@ -63,7 +64,7 @@ def list_labels_tool() -> str:
         return "gmail service not initialized"
     
     try:
-        labels = _gmail_service.get_labels()
+        labels = _gmail_service.list_labels()
         label_names = [label['name'] for label in labels]
         return f"available labels: {', '.join(label_names)}"
         
@@ -86,6 +87,25 @@ def trash_email_tool(message_id: str) -> str:
     except Exception as e:
         return f"error trashing email: {str(e)}"
 
+@tool
+def get_email_stats_tool() -> str:
+    """get comprehensive email statistics"""
+    if not _gmail_service:
+        return "gmail service not initialized"
+    
+    try:
+        stats = _gmail_service.get_email_stats_summary()
+        return f"""Email Statistics:
+Total emails: {stats['total']}
+Unread emails: {stats['unread']}
+Emails today: {stats['today']}
+Emails this week: {stats['this_week']}
+Emails this month: {stats['this_month']}
+With attachments: {stats['with_attachments']}"""
+        
+    except Exception as e:
+        return f"error getting email stats: {str(e)}"
+
 class MailAgent:
     def __init__(self, gmail_service):
         # initialize gmail service for tools
@@ -96,7 +116,8 @@ class MailAgent:
             search_emails_tool,
             get_email_details_tool,
             list_labels_tool,
-            trash_email_tool
+            trash_email_tool,
+            get_email_stats_tool
         ]
         self.agent_executor = self._create_agent()
     

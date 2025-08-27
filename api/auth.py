@@ -22,6 +22,7 @@ class AuthService:
         self.redirect_uri = os.getenv("REDIRECT_URI", "http://localhost:8000/api/auth/callback")
         self.jwt_secret = os.getenv("JWT_SECRET_KEY")
         self.scopes = [
+            'openid',
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
             'https://mail.google.com/'
