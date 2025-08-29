@@ -1,33 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
-declare global {
-  interface Window {
-    google: any;
-  }
-}
+import Login from './components/login'
+import MailPage from './components/main/MailPage'
+
+
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  function handleCallbackResponse(response: any){
-    console.log("Encoded JWT ID token: " + response.credential);
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+  };
+
+  if (!isAuthenticated) {
+    return <Login onAuthSuccess={handleAuthSuccess} />;
   }
-  useEffect(() => {
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleCallbackResponse
-      });
 
-      window.google.accounts.id.renderButton(
-        document.getElementById("signIn"),
-        {theme: "outline", size: "large"}
-      );
-    }
-  }, []);
-  return (
-    <>
-      <div id="signIn"></div>
-    </>
-  )
+  // after login
+  return <MailPage/>
 }
 
-export default App
+export default App;
