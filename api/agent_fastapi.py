@@ -15,13 +15,11 @@ load_dotenv()
 _gmail_service = None
 
 def init_gmail_service(service):
-    """initialize gmail service for tools"""
     global _gmail_service
     _gmail_service = service
 
 @tool
 def search_emails_tool(query: str, max_results: int = 5) -> str:
-    """search for emails using gmail search query syntax"""
     if not _gmail_service:
         return "gmail service not initialized"
     
@@ -43,7 +41,6 @@ def search_emails_tool(query: str, max_results: int = 5) -> str:
 
 @tool
 def get_email_details_tool(message_id: str) -> str:
-    """get detailed information about a specific email"""
     if not _gmail_service:
         return "gmail service not initialized"
     
@@ -73,7 +70,6 @@ def list_labels_tool() -> str:
 
 @tool
 def trash_email_tool(message_id: str) -> str:
-    """move an email to trash"""
     if not _gmail_service:
         return "gmail service not initialized"
     
@@ -89,7 +85,6 @@ def trash_email_tool(message_id: str) -> str:
 
 @tool
 def get_email_stats_tool() -> str:
-    """get comprehensive email statistics"""
     if not _gmail_service:
         return "gmail service not initialized"
     
@@ -122,7 +117,7 @@ class MailAgent:
         self.agent_executor = self._create_agent()
     
     def _create_agent(self):
-        """create the langchain agent with gmail tools"""
+        """cangchain agent with gmail tools"""
         system_prompt = """you are a helpful gmail assistant. you can help users manage their emails using the available tools.
 
         key capabilities:

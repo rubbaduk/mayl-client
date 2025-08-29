@@ -25,7 +25,7 @@ class GmailService:
 
     
     def search_emails(self, query: str = '', max_results: int = 200, user_id: str = 'me') -> List[Dict]:
-        """search for emails using gmail search query syntax"""
+        """using gmail search query syntax"""
         messages = []
         next_page_token = None
         
@@ -91,7 +91,6 @@ class GmailService:
             return []
 
     def get_email_details(self, message_id: str, user_id: str = 'me') -> Dict[str, Any]:
-        """get detailed information about a specific email"""
         try:
             message = self.service.users().messages().get(
                 userId=user_id,
@@ -159,7 +158,6 @@ class GmailService:
 
     
     def count_emails_today(self, user_id: str = 'me') -> int:
-        """count emails received today"""
         try:
             today = datetime.date.today()
             query = f"after:{today.strftime('%Y/%m/%d')}"
@@ -175,7 +173,6 @@ class GmailService:
             return 0
 
     def count_emails_this_week(self, user_id: str = 'me') -> int:
-        """count emails received this week"""
         try:
             today = datetime.date.today()
             start_of_week = today - datetime.timedelta(days=today.weekday())
@@ -192,7 +189,6 @@ class GmailService:
             return 0
 
     def count_emails_this_month(self, user_id: str = 'me') -> int:
-        """count emails received this month"""
         try:
             today = datetime.date.today()
             start_of_month = today.replace(day=1)
@@ -209,7 +205,6 @@ class GmailService:
             return 0
 
     def get_email_stats_summary(self, user_id: str = 'me') -> Dict[str, int]:
-        """get comprehensive email statistics"""
         try:
             stats = {
                 'today': self.count_emails_today(user_id),
@@ -253,7 +248,6 @@ class GmailService:
 
     
     def list_labels(self, user_id: str = 'me') -> List[Dict]:
-        """get all gmail labels/folders"""
         try:
             results = self.service.users().labels().list(userId=user_id).execute()
             return results.get('labels', [])
@@ -267,7 +261,6 @@ class GmailService:
 
     def create_label(self, name: str, label_list_visibility: str = 'labelShow', 
                     message_list_visibility: str = 'show', user_id: str = 'me'):
-        """create a new gmail label"""
         try:
             label = {
                 'name': name,
@@ -281,7 +274,6 @@ class GmailService:
             return None
 
     def get_label_details(self, label_id: str, user_id: str = 'me'):
-        """get details of a specific label"""
         try:
             return self.service.users().labels().get(userId=user_id, id=label_id).execute()
         except Exception as e:
@@ -289,7 +281,6 @@ class GmailService:
             return None
 
     def delete_label(self, label_id: str, user_id: str = 'me'):
-        """delete a label"""
         try:
             self.service.users().labels().delete(userId=user_id, id=label_id).execute()
             return True
@@ -309,7 +300,6 @@ class GmailService:
 
     
     def trash_email(self, message_id: str, user_id: str = 'me') -> bool:
-        """move email to trash"""
         try:
             self.service.users().messages().trash(userId=user_id, id=message_id).execute()
             return True
@@ -318,7 +308,6 @@ class GmailService:
             return False
 
     def untrash_email(self, message_id: str, user_id: str = 'me') -> bool:
-        """remove email from trash"""
         try:
             self.service.users().messages().untrash(userId=user_id, id=message_id).execute()
             return True
@@ -366,7 +355,6 @@ class GmailService:
     
     def send_email(self, to: str, subject: str, body: str, body_type: str = 'plain', 
                   attachment_paths: List[str] = None, user_id: str = 'me'):
-        """send an email"""
         try:
             message = MIMEMultipart()
             message['to'] = to
@@ -410,7 +398,6 @@ class GmailService:
 
     
     def search_email_conversations(self, query: str, max_results: int = 5, user_id: str = 'me'):
-        """search email conversations/threads"""
         conversations = []
         next_page_token = None
 
@@ -435,7 +422,6 @@ class GmailService:
             return []
 
     def get_message_and_replies(self, message_id: str, user_id: str = 'me'):
-        """get a message and all its replies in the thread"""
         try:
             # get thread id from message
             message = self.service.users().messages().get(
@@ -476,7 +462,6 @@ class GmailService:
 
     
     def batch_trash_emails(self, message_ids: List[str], user_id: str = 'me'):
-        """trash multiple emails in batch"""
         try:
             batch = self.service.new_batch_http_request()
             for message_id in message_ids:
@@ -488,7 +473,6 @@ class GmailService:
             return False
 
     def batch_untrash_emails(self, message_ids: List[str], user_id: str = 'me'):
-        """untrash multiple emails in batch"""
         try:
             batch = self.service.new_batch_http_request()
             for message_id in message_ids:
@@ -500,7 +484,6 @@ class GmailService:
             return False
 
     def empty_trash(self, user_id: str = 'me'):
-        """empty the trash folder"""
         page_token = None
         total_deleted = 0
 

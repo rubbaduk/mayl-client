@@ -46,7 +46,7 @@ async def handle_oauth_callback(code: str = None, error: str = None):
     
     try:
         session_token = await auth_service.handle_oauth_callback(code)
-        return RedirectResponse(url=f"http://localhost:5173?token={session_token}")
+        return RedirectResponse(url=f"http://localhost:5173/mail?token={session_token}")
     except Exception as e:
         raise HTTPException(500, f"oauth callback failed: {str(e)}")
 
