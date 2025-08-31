@@ -37,21 +37,8 @@ const Sidebar = ({collapsed, onToggleCollapse}: SidebarProps) => {
       <nav className="h-full flex flex-col bg-white border-r border-gray-200 shadow-sm">
         <div className="p-4 pb-2 flex justify-between items-center">
           <div className={`overflow-hidden transition-all ${collapsed ? 'w-0' : 'w-32'}`}>
-            <img 
-              src="https://www.google.com/gmail/about/static/images/logo-gmail.png" 
-              alt="Gmail"
-              className="h-8"
-            />
+
           </div>
-          <button 
-            onClick={onToggleCollapse}
-            className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
-          >
-            {collapsed ? 
-              <ChevronDoubleRightIcon className="w-5 h-5 text-gray-600" /> : 
-              <ChevronDoubleLeftIcon className="w-5 h-5 text-gray-600" />
-            }
-          </button>
         </div>
 
         <div className="flex-1 px-3 py-4 space-y-1">

@@ -8,11 +8,12 @@ interface UserProfile {
 
 interface HeaderProps {
   userProfile?: UserProfile;
+  onMenuClick: () => void;
 }
 
 
 
-const Header: React.FC<HeaderProps>= ({userProfile}) => {
+const Header: React.FC<HeaderProps>= ({userProfile, onMenuClick}) => {
 
   const [showDropdown, setShowDropdown] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -57,7 +58,7 @@ const Header: React.FC<HeaderProps>= ({userProfile}) => {
     <header className="flex items-center justify-between px-4 py-2 bg-gmail-lightgray border-b border-gray-200 w-full gap-2">
       {/* left side */}
       <div className="flex items-center space-x-4 shrink-0 gap-2">
-        <button className="p-2 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gmail-blue">
+        <button onClick = {onMenuClick} className="p-2 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gmail-blue">
           <svg className="w-6 h-6 text-gmail-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
