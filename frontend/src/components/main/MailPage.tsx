@@ -1,17 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Header from './Header';
+import Sidebar from './Sidebar';
 
-interface MailPageProps {
-  // props
-}
-
-const MailPage: React.FC<MailPageProps> = () => {
-
+const MailPage = () => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div>
+    <div className="flex flex-col h-screen w-full">
       <Header />
-      {/* add email interface here */}
+      <div className="flex flex-1 w-full overflow-hidden">
+        <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)} />
+        
+        
+        <main className="flex-1 w-full overflow-auto bg-gray-50">
+          {/* mail content */}
+        </main>
+      </div>
     </div>
   );
 };
