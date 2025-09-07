@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import MailList from '../email/MailList';
 
 const MailPage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -18,6 +19,7 @@ const MailPage = () => {
         
         <main className="flex-1 w-full overflow-auto bg-gray-50">
           {/* mail content */}
+          <MailList />
         </main>
       </div>
     </div>

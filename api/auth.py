@@ -116,14 +116,23 @@ class AuthService:
     async def validate_session(self, token: str) -> dict:
         """validate session token and return session data"""
         try:
+            # remove 'Bearer' prefix if present
+            if token.startswith('Bearer '):
+                token = token[7:]
+                
             payload = jwt.decode(token, self.jwt_secret, algorithms=["HS256"])
-            session_data = self._sessions.get(token)
-            if not session_data:
-                raise HTTPException(401, "session not found")
             
-            return session_data
+            return {
+                "user_id": payload["user_id"],
+                "email": payload["email"],
+                "name": payload.get("name", ""),
+                "access_token": None,
+                "refresh_token": None, 
+                "scopes": self.scopes
+            }
             
         except jwt.ExpiredSignatureError:
             raise HTTPException(401, "token expired")
-        except jwt.InvalidTokenError:
+        except jwt.InvalidTokenError as e:
+            print(f"token validation error: {str(e)}")  
             raise HTTPException(401, "invalid token")
