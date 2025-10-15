@@ -1,31 +1,160 @@
-# Sensitive files - DO NOT COMMIT
-client_secret.json
+# Sensitive files - DO NOT COMMIT TO VERSION CONTROL
+client_secret*.json
+credentials*.json
+token.json
+token_*.json
 token files/
-*.json
-test.py
+refresh_token.json
+service_account*.json
+*.pem
+*.p12
 
-# Test files and directories
-tests/
-Tests/
-*test*.py
+# Environment variables and configuration
+.env
+.env.local
+.env.production
+.env.staging
+.env.test
+config.ini
+settings.ini
 
-# Python cache files
+# Gmail API specific files
+gmail_service.pickle
+gmail_token.pickle
+quickstart-*.json
+token.pickle
+service.pickle
+*_credentials.json
+*_token.json
+
+# Python cache and bytecode files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Virtual environment files
-bin/
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
 lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+bin/
 include/
 pyvenv.cfg
 
-# macOS files
-.DS_Store
+# Testing and coverage
+.coverage
+.pytest_cache/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.tox/
+htmlcov/
+.nox/
+.coverage.*
 
-# IDE files
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Development tools
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# IDE and editor files
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
 
-# Logs
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Logs and temporary files
 *.log
+*.tmp
+*.temp
+logs/
+log/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Output files
+output/
+downloads/
+attachments/
+temp/
+
+# Documentation build
+docs/_build/
+site/
+
+# Local test data
+test_data/
+sample_data/
+mock_data/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Project specific temporary files
+test.py
+agent.py
+*.tmp
+scratch.py
+debug.py
+temp_*.py
+
+# Test files and folders
+tests/
+test_*.py
+*_test.py
